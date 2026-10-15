@@ -107,6 +107,14 @@ VoiceNote/
     └── SettingsView.swift        設定
 ```
 
+## App 圖示
+
+圖示在 `VoiceNote/Assets.xcassets/AppIcon.appiconset/AppIcon.png`（1024×1024），由 `tools/make_icon.py` 產生：
+
+```bash
+python3 tools/make_icon.py VoiceNote/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+```
+
 ## 已知限制
 
 - 這份程式碼是在沒有 Xcode 的環境寫的，**還沒實際編譯過**。第一次建置可能會有少量編譯錯誤需要修正，主要可能出在 iOS 26 的新 API（SpeechAnalyzer）。
