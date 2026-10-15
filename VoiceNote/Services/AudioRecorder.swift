@@ -18,7 +18,8 @@ final class AudioRecorder {
 
     func start() throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+        // 錄音固定用 iPhone 內建麥克風（藍牙耳機麥克風音質差）；.allowBluetoothA2DP 讓耳機仍能正常輸出聲音
+        try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothA2DP])
         try session.setActive(true)
 
         let settings: [String: Any] = [

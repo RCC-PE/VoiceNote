@@ -213,9 +213,13 @@ final class AudioPlayer {
 
     func play(url: URL, from time: TimeInterval?) {
         do {
+            // 只播放時用 .playback，聲音才會走耳機（包含 AirPods 等藍牙耳機）
+            let session = AVAudioSession.sharedInstance()
+            if session.category != .playback {
+                try session.setCategory(.playback, mode: .spokenAudio)
+            }
+            try session.setActive(true)
             if player?.url != url {
-                try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
-                try AVAudioSession.sharedInstance().setActive(true)
                 player = try AVAudioPlayer(contentsOf: url)
             }
             if let time { player?.currentTime = time }
