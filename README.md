@@ -43,6 +43,21 @@
 
 > 用免費 Apple ID 簽署的 App 7 天後會失效，要重新從 Xcode 安裝一次。付費開發者帳號（每年 US$99）則有一年效期，也可以用 TestFlight 安裝。
 
+## 沒有 Mac：用 GitHub 雲端編譯 + Windows 安裝
+
+每次推送到 `main`，GitHub Actions 會在雲端 Mac 上自動編譯出 `VoiceNote.ipa`（未簽署）。
+
+1. 到 repo 的 **Actions** 頁籤，打開最新一次成功的編譯，在下方 **Artifacts** 下載 `VoiceNote-ipa` 並解壓縮。
+2. Windows 電腦先安裝：
+   - iTunes（Apple 官網版，不是 Microsoft Store 版）：<https://www.apple.com/itunes/download/win64>
+   - iCloud for Windows 7.21（非 Store 版）：<https://updates.cdn-apple.com/2020/windows/001-39935-20200911-1A70AA56-F448-11EA-8CC0-99D41950005E/iCloudSetup.exe>
+     （SHA-256：`4CFD20D13CDCE2B5C435F2DDAF4EE4C81D976461846BF3B954E8AF6CBCDEB9F7`）
+   - Sideloadly：<https://sideloadly.io/>
+3. **iTunes 和 iCloud 都要用同一個 Apple ID 登入**（iTunes 是從選單「帳號 › 登入」）。沒登入 iTunes 的話，Sideloadly 會出現 `GSA returned a non-plist response (HTTP 503)` 錯誤。
+4. 用傳輸線接上 iPhone，在 Sideloadly 選 `VoiceNote.ipa`、輸入 Apple ID，按 Start。設定維持 Local Anisette 即可（Remote 要付費）。
+5. iPhone 上開啟「設定 › 隱私權與安全性 › 開發者模式」，並到「設定 › 一般 › VPN 與裝置管理」信任自己的 Apple ID。
+6. 免費 Apple ID 安裝的 App **每 7 天**要用 Sideloadly 重新安裝一次，資料會保留。
+
 ## 第一次使用
 
 1. 打開 App，點左上角 ⚙️ 進入設定，貼上 Claude API 金鑰。
