@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: build-ios
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-26
@@ -34,6 +38,7 @@ jobs:
 
       - name: 編譯（不簽署）
         run: |
+          set -o pipefail
           xcodebuild build \
             -project VoiceNote.xcodeproj \
             -scheme VoiceNote \
@@ -43,7 +48,17 @@ jobs:
             -quiet \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
+            CODE_SIGN_IDENTITY="" 2>&1 | tee build.log
+
+      - name: 整理編譯錯誤
+        if: failure()
+        run: |
+          test -f build.log || exit 0
+          ERRORS=$(grep -E "(error|fatal error):" build.log | sed "s|$GITHUB_WORKSPACE/||" | sort -u | head -60)
+          [ -z "$ERRORS" ] && ERRORS=$(tail -40 build.log)
+          ERRORS="${ERRORS//'%'/'%25'}"
+          ERRORS="${ERRORS//$'\n'/'%0A'}"
+          echo "::error title=編譯錯誤::$ERRORS"
 
       - name: 打包成 IPA
         run: |
