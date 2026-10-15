@@ -65,7 +65,10 @@ jobs:
         run: |
           mkdir Payload
           cp -R build/Build/Products/Release-iphoneos/VoiceNote.app Payload/
+          # 確認 whisper 框架有被打包進 App，否則一打開就會閃退
+          test -f Payload/VoiceNote.app/Frameworks/whisper.framework/whisper
           zip -qry VoiceNote.ipa Payload
+          echo "::notice title=App 內容::$(cd Payload/VoiceNote.app && du -sh . Frameworks/* VoiceNote | tr '\n' ';')"
 
       - name: 上傳 IPA
         uses: actions/upload-artifact@v4
