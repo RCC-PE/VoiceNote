@@ -1,0 +1,35 @@
+name: VoiceNote
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "26.0"
+targets:
+  VoiceNote:
+    type: application
+    platform: iOS
+    sources:
+      - VoiceNote
+    dependencies:
+      # 從 whisper.cpp 的 GitHub Releases 下載 whisper-vX.Y.Z-xcframework.zip，
+      # 解壓後把 whisper.xcframework 放到 Frameworks/ 資料夾
+      - framework: Frameworks/whisper.xcframework
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.voicenote
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        DEVELOPMENT_TEAM: ""
+    info:
+      path: VoiceNote/Info.plist
+      properties:
+        CFBundleDisplayName: 語音筆記
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIBackgroundModes:
+          - audio
+        NSMicrophoneUsageDescription: 需要使用麥克風來錄音。
+        NSSpeechRecognitionUsageDescription: 需要使用語音辨識，把錄音轉成逐字稿。

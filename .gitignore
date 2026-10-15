@@ -1,0 +1,7 @@
+# 由 xcodegen 產生
+VoiceNote.xcodeproj/
+# 由雲端編譯下載
+Frameworks/whisper.xcframework/
+build/
+*.ipa
+.DS_Store

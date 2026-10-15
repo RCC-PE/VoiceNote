@@ -1,0 +1,59 @@
+name: 編譯 iOS App
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 顯示 Xcode 版本
+        run: xcodebuild -version
+
+      - name: 安裝 XcodeGen
+        run: brew install xcodegen
+
+      - name: 下載 whisper.xcframework（whisper.cpp 最新版）
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --repo ggml-org/whisper.cpp --pattern '*xcframework.zip' --output whisper.zip
+          unzip -q whisper.zip -d _whisper
+          FRAMEWORK=$(find _whisper -name whisper.xcframework -type d -prune | head -n 1)
+          test -n "$FRAMEWORK"
+          mkdir -p Frameworks
+          mv "$FRAMEWORK" Frameworks/
+
+      - name: 產生 Xcode 專案
+        run: xcodegen
+
+      - name: 編譯（不簽署）
+        run: |
+          xcodebuild build \
+            -project VoiceNote.xcodeproj \
+            -scheme VoiceNote \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            -quiet \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: 打包成 IPA
+        run: |
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/VoiceNote.app Payload/
+          zip -qry VoiceNote.ipa Payload
+
+      - name: 上傳 IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoiceNote-ipa
+          path: VoiceNote.ipa
+          retention-days: 30
