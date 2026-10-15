@@ -34,6 +34,21 @@ struct ClaudeSummarizer {
     var apiKey: String
     var model: ClaudeModel
 
+    /// 給「複製到 Claude App」用的完整指令，可以貼到免費的 Claude App 或 claude.ai
+    static func manualPrompt(transcript: String, language: TranscriptLanguage, instruction: String) -> String {
+        var note = "以下是語音辨識自動產生的錄音逐字稿，可能有同音錯字，請依上下文理解。"
+        if language == .taiwanese { note += "這份逐字稿是從台語錄音轉寫成華語文字。" }
+        return """
+        請用台灣繁體中文幫我整理這段錄音。\(note)
+
+        \(instruction.isEmpty ? defaultInstruction : instruction)
+
+        <transcript>
+        \(transcript)
+        </transcript>
+        """
+    }
+
     func summarize(transcript: String, language: TranscriptLanguage, instruction: String) async throws -> String {
         var system = """
         你負責整理錄音逐字稿。請一律使用台灣繁體中文回答，內容要忠於逐字稿，不要加入逐字稿沒有的資訊。\
@@ -110,6 +125,7 @@ enum SummaryError: LocalizedError {
     case api(status: Int, message: String)
     case refused
     case empty
+    case appleUnavailable(String)
 
     var errorDescription: String? {
         switch self {
@@ -123,6 +139,7 @@ enum SummaryError: LocalizedError {
             }
         case .refused: "Claude 拒絕處理這份內容。"
         case .empty: "Claude 沒有回傳內容。"
+        case .appleUnavailable(let reason): reason
         }
     }
 }

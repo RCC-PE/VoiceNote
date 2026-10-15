@@ -13,11 +13,15 @@ final class Processor {
 
     func isBusy(_ recording: Recording) -> Bool { tasks[recording.id] != nil }
 
-    /// 轉錄；如果有設定 API 金鑰，接著自動總結
+    /// 轉錄，接著自動總結（用 Claude 但沒設定金鑰時就只轉錄）
     func process(_ recording: Recording) {
         start(recording) {
             try await self.runTranscription(recording)
-            if KeychainStore.get(SettingsKey.claudeAPIKey) != nil {
+            let canSummarize = switch SummaryEngine.current {
+            case .apple: AppleSummarizer.unavailableReason == nil
+            case .claude: KeychainStore.get(SettingsKey.claudeAPIKey) != nil
+            }
+            if canSummarize {
                 try await self.runSummary(recording)
             }
         }
@@ -77,14 +81,23 @@ final class Processor {
     }
 
     private func runSummary(_ recording: Recording) async throws {
-        guard let apiKey = KeychainStore.get(SettingsKey.claudeAPIKey) else { throw SummaryError.missingAPIKey }
         guard !recording.transcript.isEmpty else { throw SummaryError.emptyTranscript }
+        let instruction = UserDefaults.standard.string(forKey: SettingsKey.summaryInstruction) ?? ""
+
+        if SummaryEngine.current == .apple {
+            recording.status = .summarizing
+            progress[recording.id] = nil
+            recording.summary = try await AppleSummarizer()
+                .summarize(transcript: recording.transcript, language: recording.language, instruction: instruction)
+            return
+        }
+
+        guard let apiKey = KeychainStore.get(SettingsKey.claudeAPIKey) else { throw SummaryError.missingAPIKey }
 
         recording.status = .summarizing
         progress[recording.id] = nil
         let defaults = UserDefaults.standard
         let model = ClaudeModel(rawValue: defaults.string(forKey: SettingsKey.claudeModel) ?? "") ?? .opus
-        let instruction = defaults.string(forKey: SettingsKey.summaryInstruction) ?? ""
 
         recording.summary = try await ClaudeSummarizer(apiKey: apiKey, model: model)
             .summarize(transcript: recording.transcript, language: recording.language, instruction: instruction)

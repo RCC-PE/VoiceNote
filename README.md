@@ -9,7 +9,7 @@
 - **逐字稿**：每一段都有時間戳記，點時間就從那裡開始播放。
   - 國語、英語：Apple SpeechAnalyzer（iOS 26），在手機上離線處理，免費。
   - 台語：聯發科開源的 Breeze-ASR-26 模型，透過 whisper.cpp 在手機上離線執行，台語會轉寫成**華語文字**。
-- **AI 總結**：呼叫 Claude API，預設格式是摘要、重點、待辦事項，可以在設定頁自訂。
+- **AI 總結**：可用免費的 Apple 裝置上模型、複製到免費的 Claude App，或付費的 Claude API。預設格式是摘要、重點、待辦事項，可以在設定頁自訂。
 - 複製、分享逐字稿與總結；重新轉錄、重新總結。
 
 ## 需要的東西
@@ -75,9 +75,13 @@
 - 這是大型模型，在手機上跑得比國語辨識慢很多，速度依機型而定（我沒有實測過），長錄音可能要花上和錄音差不多長的時間。處理期間請讓 App 留在前景。
 - 要做到台文漢字或台羅輸出，可以改接國家的「Taiwan Tongues ASR」自架服務（<https://github.com/adi-gov-tw/Taiwan-Tongues-ASR-CE>），但需要自己準備有 GPU 的伺服器。
 
-## 費用估算（Claude API）
+## AI 總結的三種方式
 
-一小時錄音的逐字稿大約 1.5～2 萬字。以 Claude Opus 5.5（每百萬 token：輸入 US$4、輸出 US$20）估算，一次總結大約 US$0.1～0.2。在設定頁改用 Sonnet 5.5 或 Haiku 5.5 會更便宜。
+| 方式 | 費用 | 說明 |
+|---|---|---|
+| Apple 裝置上模型（預設） | 免費 | 離線執行，需要支援 Apple Intelligence 的 iPhone（iPhone 15 Pro 以上）並開啟 Apple Intelligence。品質比 Claude 差一些，長錄音會先分段整理再總結。 |
+| 複製給 Claude App | 免費 | 逐字稿頁面按「複製給 Claude App 總結」，貼到免費的 Claude App 或 claude.ai 送出。需要手動貼上一次。 |
+| Claude API | 依用量付費 | 全自動、品質最好。需要到 platform.claude.com 儲值。一小時錄音的逐字稿約 2～3 萬 token：Haiku 5.5 一次不到 US$0.01，Opus 5.5 約 US$0.1～0.2。 |
 
 ## 程式架構
 

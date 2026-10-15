@@ -5,6 +5,7 @@ struct RecordingDetailView: View {
     @Bindable var recording: Recording
     @State private var tab = ContentTab.summary
     @State private var player = AudioPlayer()
+    @State private var copiedForClaude = false
 
     private enum ContentTab: String, CaseIterable {
         case summary = "AI 總結"
@@ -93,6 +94,7 @@ struct RecordingDetailView: View {
                 Button("產生 AI 總結", systemImage: "sparkles") { processor.summarize(recording) }
                     .buttonStyle(.borderedProminent)
                     .disabled(recording.transcript.isEmpty || busy)
+                copyForClaudeAppButton
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 24)
@@ -107,7 +109,31 @@ struct RecordingDetailView: View {
                         .disabled(busy)
                 }
                 .font(.subheadline)
+                copyForClaudeAppButton
             }
+        }
+    }
+
+    /// 複製逐字稿和整理指令，貼到免費的 Claude App 就能總結，不需要 API 金鑰
+    @ViewBuilder
+    private var copyForClaudeAppButton: some View {
+        if !recording.transcript.isEmpty {
+            VStack(spacing: 4) {
+                Button("複製給 Claude App 總結", systemImage: "doc.on.clipboard") {
+                    UIPasteboard.general.string = ClaudeSummarizer.manualPrompt(
+                        transcript: recording.transcript,
+                        language: recording.language,
+                        instruction: UserDefaults.standard.string(forKey: SettingsKey.summaryInstruction) ?? ""
+                    )
+                    copiedForClaude = true
+                }
+                .font(.subheadline)
+                Text(copiedForClaude ? "已複製，打開 Claude App 貼上送出即可。" : "免費：複製後貼到 Claude App 或 claude.ai。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 8)
         }
     }
 

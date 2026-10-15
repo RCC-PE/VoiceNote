@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(SettingsKey.summaryEngine) private var summaryEngine = SummaryEngine.apple.rawValue
     @AppStorage(SettingsKey.claudeModel) private var claudeModel = ClaudeModel.opus.rawValue
     @AppStorage(SettingsKey.summaryInstruction) private var summaryInstruction = ""
     @AppStorage(SettingsKey.defaultLanguage) private var defaultLanguage = TranscriptLanguage.mandarin.rawValue
@@ -16,6 +17,19 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
+                    Picker("總結方式", selection: $summaryEngine) {
+                        ForEach(SummaryEngine.allCases) { Text($0.displayName).tag($0.rawValue) }
+                    }
+                    if summaryEngine == SummaryEngine.apple.rawValue, let reason = AppleSummarizer.unavailableReason {
+                        Text(reason).font(.footnote).foregroundStyle(.orange)
+                    }
+                } header: {
+                    Text("AI 總結")
+                } footer: {
+                    Text("Apple 裝置上模型免費、離線，需要支援 Apple Intelligence 的 iPhone。不論選哪一種，逐字稿頁面都有「複製給 Claude App 總結」按鈕，可以貼到免費的 Claude App 使用。")
+                }
+
+                Section {
                     SecureField("sk-ant-…", text: $apiKey)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
@@ -23,9 +37,9 @@ struct SettingsView: View {
                         ForEach(ClaudeModel.allCases) { Text($0.displayName).tag($0.rawValue) }
                     }
                 } header: {
-                    Text("Claude AI 總結")
+                    Text("Claude API（選填）")
                 } footer: {
-                    Text("到 platform.claude.com 申請 API 金鑰。金鑰只存在這支手機的 Keychain，費用依用量計算。")
+                    Text("總結方式選 Claude API 時才需要。到 platform.claude.com 申請 API 金鑰並儲值，費用依用量計算；Haiku 5.5 總結一小時錄音不到 US$0.01。金鑰只存在這支手機的 Keychain。")
                 }
 
                 Section {

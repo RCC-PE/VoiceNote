@@ -41,4 +41,5 @@ enum SettingsKey {
     static let defaultLanguage = "defaultLanguage"
     static let autoProcess = "autoProcess"
     static let taiwaneseModelURL = "taiwaneseModelURL"
+    static let summaryEngine = "summaryEngine"
 }
