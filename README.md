@@ -23,7 +23,7 @@
 ## 建置步驟
 
 1. **下載 whisper.cpp 框架**
-   到 <https://github.com/ggml-org/whisper.cpp/releases> 下載最新的 `whisper-vX.Y.Z-xcframework.zip`，解壓後把 `whisper.xcframework` 放到專案的 `Frameworks/` 資料夾：
+   到 <https://github.com/ggml-org/whisper.cpp/releases> 下載 `whisper-v1.9.2-xcframework.zip`（v1.9.3 之後的版本沒有附這個檔案），解壓後把 `whisper.xcframework` 放到專案的 `Frameworks/` 資料夾：
    ```
    VoiceNote/
    ├── Frameworks/whisper.xcframework

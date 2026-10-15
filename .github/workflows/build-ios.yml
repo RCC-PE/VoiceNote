@@ -22,11 +22,12 @@ jobs:
       - name: 安裝 XcodeGen
         run: brew install xcodegen
 
-      - name: 下載 whisper.xcframework（whisper.cpp 最新版）
+      - name: 下載 whisper.xcframework
         env:
-          GH_TOKEN: ${{ github.token }}
+          # 較新的 whisper.cpp 版本沒有附 xcframework，固定使用有附的版本
+          WHISPER_VERSION: v1.9.2
         run: |
-          gh release download --repo ggml-org/whisper.cpp --pattern '*xcframework.zip' --output whisper.zip
+          curl -fsSL -o whisper.zip "https://github.com/ggml-org/whisper.cpp/releases/download/${WHISPER_VERSION}/whisper-${WHISPER_VERSION}-xcframework.zip"
           unzip -q whisper.zip -d _whisper
           FRAMEWORK=$(find _whisper -name whisper.xcframework -type d -prune | head -n 1)
           test -n "$FRAMEWORK"

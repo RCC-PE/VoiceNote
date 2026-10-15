@@ -10,7 +10,7 @@ targets:
     sources:
       - VoiceNote
     dependencies:
-      # 從 whisper.cpp 的 GitHub Releases 下載 whisper-vX.Y.Z-xcframework.zip，
+      # 從 whisper.cpp 的 GitHub Releases 下載 whisper-v1.9.2-xcframework.zip，
       # 解壓後把 whisper.xcframework 放到 Frameworks/ 資料夾
       - framework: Frameworks/whisper.xcframework
         embed: true
